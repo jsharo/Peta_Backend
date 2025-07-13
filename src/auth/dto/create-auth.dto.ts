@@ -1,6 +1,7 @@
 // Importa los decoradores de validación y el decorador personalizado para contraseñas
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
 import { PasswordMatch } from '../decorators/password-match.decorator';
+import { UserRole } from '../../users/entities/user.entity'; 
 
 /**
  * DTO para crear un nuevo usuario (registro).
@@ -36,4 +37,11 @@ export class CreateAuthDto {
   @IsNotEmpty()
   @PasswordMatch('password')
   confirmPassword: string;
+
+  /**
+   * Rol del usuario (opcional, por defecto será CLIENTE).
+   */
+  @IsOptional()
+  @IsEnum(UserRole, { message: 'El rol debe ser admin o cliente' })
+  role?: UserRole;
 }

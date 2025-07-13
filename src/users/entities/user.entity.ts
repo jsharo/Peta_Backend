@@ -5,7 +5,7 @@ import { Pet } from '../../pets/entities/pet.entity';
 // Definimos el enum de roles
 export enum UserRole {
   ADMIN = 'admin',
-  USER = 'user' // Cambié 'usuario' a 'user' para mantener consistencia con estándares
+  CLIENTE = 'cliente' // Cambié 'user' a 'cliente' para distinguir entre un usuario admin y un usuario cliente.
 }
 
 @Entity()
@@ -27,7 +27,7 @@ export class User {
   @Column({ 
     type: 'enum',
     enum: UserRole,
-    default: UserRole.USER // Valor por defecto
+    default: UserRole.CLIENTE // Valor por defecto
   })
   role: UserRole; // Usamos 'role' en singular por convención
 

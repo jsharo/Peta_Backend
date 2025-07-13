@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return { 
       userId: payload.sub, 
       email: payload.email,
-      role: payload.role || UserRole.USER // Valor por defecto si no viene en el token
+      role: payload.role || UserRole.CLIENTE // Valor por defecto si no viene en el token
     };
   }
 }

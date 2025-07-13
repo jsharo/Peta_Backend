@@ -51,7 +51,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.USER) // Accesible por ambos roles
+  @Roles(UserRole.ADMIN, UserRole.CLIENTE) // Accesible por ambos roles
   async findOne(
     @Req() req,
     @GetUser() currentUser: User,

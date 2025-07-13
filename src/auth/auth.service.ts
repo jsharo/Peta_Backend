@@ -71,7 +71,7 @@ export class AuthService {
       name: createAuthDto.name,
       email: createAuthDto.email,
       password: hashedPassword,
-      role: UserRole.USER // Rol por defecto
+      role: createAuthDto.role || UserRole.CLIENTE // Permite poner el rol pero usa el rol del DTO o CLIENTE por defecto
     });
 
     await this.usersRepository.save(user);

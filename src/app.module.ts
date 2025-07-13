@@ -14,7 +14,7 @@ import { DoorModule } from './door/door.module';
       port: 5432,
       username: 'postgres',
       password: '741951',
-      database: 'petabd',
+      database: 'petadb',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // Solo para desarrollo
     }),
