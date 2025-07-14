@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Door } from './entities/door.entity';
@@ -20,7 +20,7 @@ export class DoorService {
     const door = await this.doorRepository.findOne({ where: { id: doorId } });
     
     if (!door) {
-      throw new Error('Door not found');
+      throw new NotFoundException('Puerta no encontrada'); // ✅ Usar NotFoundException
     }
 
     // Actualizar estado en base de datos
@@ -47,7 +47,7 @@ export class DoorService {
   async getDoorStatus(doorId: string): Promise<Door> {
     const door = await this.doorRepository.findOne({ where: { id: doorId } });
     if (!door) {
-      throw new Error('Puerta no encontrada');
+      throw new NotFoundException('Puerta no encontrada'); // ✅ Consistente
     }
     return door;
   }

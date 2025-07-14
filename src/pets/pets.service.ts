@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Pet } from './entities/pet.entity';
@@ -32,21 +32,15 @@ export class PetsService {
       where: { id, owner: { id: ownerId } },
     });
     if (!pet) {
-      throw new Error('Mascota no encontrada');
+      throw new NotFoundException('Mascota no encontrada'); // ✅ Usar NotFoundException
     }
     return pet;
   }
 
   async update(id: number, updatePetDto: UpdatePetDto, ownerId: number): Promise<Pet> {
-    await this.petsRepository.update(
-      { id, owner: { id: ownerId } },
-      updatePetDto,
-    );
-    const pet = await this.findOne(id, ownerId);
-    if (!pet) {
-      throw new Error('Mascota no encontrada');
-    }
-    return pet;
+    const pet = await this.findOne(id, ownerId); // ✅ Reutilizar método que ya valida
+    Object.assign(pet, updatePetDto);
+    return await this.petsRepository.save(pet);
   }
 
   async remove(id: number, ownerId: number): Promise<void> {

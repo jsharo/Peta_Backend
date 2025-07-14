@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nes
 import { PetsService } from './pets.service';
 import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
-import { JwtAuthGuard } from 'src/common/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { GetUser } from '../common/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 

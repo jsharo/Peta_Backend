@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { jwtConstants } from '../constants';
+import { jwtConstants } from 'src/constants';
 import { UserRole } from 'src/users/entities/user.entity'; // Importamos el enum de roles
 
 @Injectable()
@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // El payload debe contener al menos:
     // sub (subject/userId), email y role
     return { 
-      userId: payload.sub, 
+      id: payload.sub, 
       email: payload.email,
       role: payload.role || UserRole.CLIENTE // Valor por defecto si no viene en el token
     };
