@@ -4,7 +4,7 @@ import { RolesGuard } from '../common/guards/roles.guard'; // Cambiar ruta
 import { UsersService } from './users.service';
 import { GetUser } from '../common/decorators/get-user.decorator';
 import { User } from './entities/user.entity';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

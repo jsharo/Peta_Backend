@@ -1,6 +1,6 @@
 // Importa los decoradores de validación y el decorador personalizado para contraseñas
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
-import { PasswordMatch } from '../decorators/password-match.decorator';
+import { PasswordMatch } from '../../common/decorators/password-match.decorator';
 import { UserRole } from '../../users/entities/user.entity'; 
 
 /**

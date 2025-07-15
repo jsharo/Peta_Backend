@@ -5,8 +5,8 @@ import { User } from '../users/entities/user.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { jwtConstants } from 'src/constants';
-import { RolesGuard } from 'src/common/guards/roles.guard'; // Importamos el guard de roles
+import { jwtConstants } from '../common/constants';
+import { RolesGuard } from '../common/guards/roles.guard'; // Importamos el guard de roles
 
 @Module({
   imports: [

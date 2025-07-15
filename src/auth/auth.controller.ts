@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { GetUser } from '../common/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 
 @Controller('auth')
