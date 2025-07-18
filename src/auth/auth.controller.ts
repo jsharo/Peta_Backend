@@ -26,6 +26,6 @@ export class AuthController {
     @GetUser() user: User,
     @Body() updateAuthDto: UpdateAuthDto,
   ) {
-    return this.authService.updateUser(user.id, updateAuthDto);
+    return this.authService.updateUser(user.id_user, updateAuthDto);
   }
 }

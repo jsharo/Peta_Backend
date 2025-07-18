@@ -2,43 +2,40 @@ import { Entity, PrimaryGeneratedColumn, Column, Unique, OneToMany } from 'typeo
 import { Exclude } from 'class-transformer';
 import { Pet } from '../../pets/entities/pet.entity';
 
-// Definimos el enum de roles
+// Enum para roles según la base de datos
 export enum UserRole {
   ADMIN = 'admin',
-  CLIENTE = 'cliente' // Cambié 'user' a 'cliente' para distinguir entre un usuario admin y un usuario cliente.
+  CLIENT = 'client'
 }
 
-@Entity()
+@Entity('user')
 @Unique(['email'])
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_user' })
+  id_user: number;
 
-  @Column()
+  @Column({ name: 'name', type: 'varchar', length: 100 })
   name: string;
 
-  @Column()
+  @Column({ name: 'email', type: 'varchar', length: 100 })
   email: string;
-  
+
   @Exclude()
-  @Column({ select: false })
+  @Column({ name: 'password', type: 'varchar', length: 100, select: false })
   password: string;
 
-  @Column({ 
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.CLIENTE // Valor por defecto
-  })
-  role: UserRole; // Usamos 'role' en singular por convención
+  @Column({ name: 'age', type: 'integer', nullable: true })
+  age?: number;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column({ name: 'sex', type: 'varchar', length: 20, nullable: true })
+  sex?: string;
 
-  @OneToMany(() => Pet, pet => pet.owner)
+  @Column({ name: 'rol', type: 'varchar', length: 20, default: UserRole.CLIENT })
+  rol: UserRole;
+
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  is_active: boolean;
+
+  @OneToMany(() => Pet, pet => pet.id_user)
   pets: Pet[];
-
-  // Método para verificar si el usuario es admin
-  isAdmin(): boolean {
-    return this.role === UserRole.ADMIN;
-  }
 }

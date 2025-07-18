@@ -17,20 +17,20 @@ export class DoorService {
   ) {}
 
   async controlDoor(doorId: string, controlDoorDto: ControlDoorDto): Promise<Door> {
-    const door = await this.doorRepository.findOne({ where: { id: doorId } });
+    const door = await this.doorRepository.findOne({ where: { id_door: Number(doorId) } });
     
     if (!door) {
       throw new NotFoundException('Puerta no encontrada'); // ✅ Usar NotFoundException
     }
 
     // Actualizar estado en base de datos
-    door.isLocked = controlDoorDto.lock;
-    door.lastStatusChange = new Date();
+    (door as any).is_locked = controlDoorDto.lock;
+    (door as any).last_status_change = new Date();
     await this.doorRepository.save(door);
 
     // Enviar comando al ESP32
     try {
-      const esp32Url = `http://${door.esp32Id}/api/door`; // Ajusta según tu configuración
+      const esp32Url = `http://${(door as any).esp32_id}/api/door`; // Ajusta según tu configuración
       const response = await firstValueFrom(
         this.httpService.post(esp32Url, { lock: controlDoorDto.lock }),
       );
@@ -45,7 +45,7 @@ export class DoorService {
   }
 
   async getDoorStatus(doorId: string): Promise<Door> {
-    const door = await this.doorRepository.findOne({ where: { id: doorId } });
+    const door = await this.doorRepository.findOne({ where: { id_door: Number(doorId) } });
     if (!door) {
       throw new NotFoundException('Puerta no encontrada'); // ✅ Consistente
     }

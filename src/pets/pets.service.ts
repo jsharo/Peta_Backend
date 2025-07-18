@@ -16,20 +16,20 @@ export class PetsService {
   async create(createPetDto: CreatePetDto, owner: User): Promise<Pet> {
     const pet = this.petsRepository.create({
       ...createPetDto,
-      owner,
+      id_user: owner.id_user,
     });
     return await this.petsRepository.save(pet);
   }
 
   async findAllByOwner(ownerId: number): Promise<Pet[]> {
     return await this.petsRepository.find({
-      where: { owner: { id: ownerId } },
+      where: { id_user: ownerId },
     });
   }
 
   async findOne(id: number, ownerId: number): Promise<Pet> {
     const pet = await this.petsRepository.findOne({
-      where: { id, owner: { id: ownerId } },
+      where: { id_pet: id, id_user: ownerId },
     });
     if (!pet) {
       throw new NotFoundException('Mascota no encontrada'); // ✅ Usar NotFoundException
@@ -44,6 +44,6 @@ export class PetsService {
   }
 
   async remove(id: number, ownerId: number): Promise<void> {
-    await this.petsRepository.delete({ id, owner: { id: ownerId } });
+    await this.petsRepository.delete({ id_pet: id, id_user: ownerId });
   }
 }

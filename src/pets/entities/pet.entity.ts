@@ -1,26 +1,27 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
-@Entity()
+@Entity('pet')
 export class Pet {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'id_pet' })
+  id_pet: number;
 
-  @Column()
-  name: string;
+  @Column({ name: 'name_pet', type: 'varchar', length: 100 })
+  name_pet: string;
 
-  @Column()
-  species: string; // Especie (perro, gato, etc.)
+  @Column({ name: 'species', type: 'varchar', length: 50, nullable: true })
+  species?: string;
 
-  @Column()
-  breed: string; // Raza
+  @Column({ name: 'race', type: 'varchar', length: 50, nullable: true })
+  race?: string;
 
-  @Column()
-  age: number;
+  @Column({ name: 'sex', type: 'varchar', length: 20, nullable: true })
+  sex?: string;
 
-  @Column()
-  sex: string; // Sexo (Macho/Hembra)
+  @Column({ name: 'id_collar', type: 'varchar', length: 50, unique: true })
+  id_collar: string;
 
   @ManyToOne(() => User, user => user.pets)
-  owner: User; // Relación con el dueño
+  @Column({ name: 'id_user', type: 'integer' })
+  id_user: number;
 }

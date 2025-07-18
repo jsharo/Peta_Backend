@@ -14,9 +14,9 @@ import { DoorModule } from './door/door.module';
       port: Number(process.env.DB_PORT) || 5432,
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || '741951',
-      database: process.env.DB_NAME || 'petadb',
+      database: process.env.DB_DATABASE || 'petadb',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: process.env.NODE_ENV !== 'production', // ✅ Solo en desarrollo
+      synchronize: false,
     }),
     AuthModule,
     UsersModule,

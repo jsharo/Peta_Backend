@@ -28,11 +28,11 @@ export class UsersService {
 
      // ✅ CORREGIR: Usar el name del DTO
   const user = this.usersRepository.create({
-    name: createUserDto.name, // ✅ Usar el name del DTO
+    name: createUserDto.name,
     email: createUserDto.email,
     password: hashedPassword,
-    role: createUserDto.role || UserRole.CLIENTE,
-    isActive: true // ✅ Establecer explícitamente
+    rol: createUserDto.role || UserRole.CLIENT,
+    is_active: true
   });
 
     const savedUser = await this.usersRepository.save(user);
@@ -44,38 +44,36 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     return this.usersRepository.find({
-      select: ['id', 'name', 'email', 'role', 'isActive']
+      select: ['id_user', 'name', 'email', 'rol', 'is_active']
     });
   }
 
-  async findOne(id: number): Promise<User> { // ✅ Cambiar: remover | null
-    const user = await this.usersRepository.findOne({ 
-      where: { id },
-      select: ['id', 'name', 'email', 'role', 'isActive']
+  async findAllClients(): Promise<User[]> {
+    return this.usersRepository.find({
+      where: { rol: UserRole.CLIENT },
+      select: ['id_user', 'name', 'email', 'rol', 'is_active']
     });
-    
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-    
-    return user; // ✅ Ahora garantiza que siempre retorna User
+  }
+
+  async findOne(id: number): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { id_user: id },
+      select: ['id_user', 'name', 'email', 'rol', 'is_active']
+    });
   }
 
   async updateUserRole(id: number, newRole: UserRole): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.usersRepository.findOne({ where: { id_user: id } });
     if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
+      throw new Error('Usuario no encontrado');
     }
-    
-    user.role = newRole;
-    const updatedUser = await this.usersRepository.save(user);
-    
-    const { password, ...result } = updatedUser;
-    return result as User;
+    user.rol = newRole;
+    await this.usersRepository.save(user);
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.usersRepository.findOne({ where: { id_user: id } });
     
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
@@ -107,7 +105,7 @@ export class UsersService {
   }
 
   async remove(id: number): Promise<void> {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.usersRepository.findOne({ where: { id_user: id } });
     
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');

@@ -25,11 +25,12 @@ export class RolesGuard implements CanActivate {
     }
 
     // ✅ Mejora: Validar que el usuario tiene un rol definido
-    if (!user.role) {
+    // ✅ Mejora: Validar que el usuario tiene un rol definido
+    if (!user.rol) {
       throw new ForbiddenException('Usuario sin rol asignado');
     }
 
-    if (!requiredRoles.includes(user.role)) {
+    if (!requiredRoles.includes(user.rol)) {
       throw new ForbiddenException('No tienes permisos para acceder a este recurso');
     }
 

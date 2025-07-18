@@ -39,17 +39,17 @@ export class AuthService {
     // Incluimos el rol en el payload del JWT
     const payload = { 
       email: user.email, 
-      sub: user.id,
-      role: user.role // Añadimos el rol al payload
+      sub: user.id_user,
+      rol: user.rol // Usamos 'rol' para coincidir con la entidad y la base de datos
     };
     
     return {
       token: this.jwtService.sign(payload),
       user: {
-        id: user.id,
+        id_user: user.id_user,
         name: user.name,
         email: user.email,
-        role: user.role // Incluimos el rol en la respuesta
+        rol: user.rol // Incluimos el rol en la respuesta
       }
     };
   }
@@ -66,12 +66,12 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(createAuthDto.password, 10);
     
-    // Crear usuario con rol por defecto (USER) si no se especifica
+    // Crear usuario con rol por defecto (CLIENT) si no se especifica
     const user = this.usersRepository.create({
       name: createAuthDto.name,
       email: createAuthDto.email,
       password: hashedPassword,
-      role: createAuthDto.role || UserRole.CLIENTE // Permite poner el rol pero usa el rol del DTO o CLIENTE por defecto
+      rol: createAuthDto.role || UserRole.CLIENT // Usamos 'role' del DTO y lo guardamos en 'rol' de la entidad
     });
 
     await this.usersRepository.save(user);
@@ -88,7 +88,7 @@ export class AuthService {
     const user = await this.usersRepository
       .createQueryBuilder('user')
       .addSelect('user.password')
-      .where('user.id = :id', { id })
+      .where('user.id_user = :id_user', { id_user: id })
       .getOne();
     
     if (!user) {
@@ -109,24 +109,24 @@ export class AuthService {
     await this.usersRepository.update(id, validUpdateData);
     
     return this.usersRepository.findOne({ 
-      where: { id },
-      select: ['id', 'name', 'email', 'role', 'isActive'] 
+      where: { id_user: id },
+      select: ['id_user', 'name', 'email', 'rol', 'is_active'] 
     });
   }
 
   // Método adicional para actualizar roles (solo accesible por admin)
   async updateUserRole(id: number, newRole: UserRole, requestingUser: User) {
     // Verificar que el usuario que hace la petición es admin
-    if (requestingUser.role !== UserRole.ADMIN) {
+    if (requestingUser.rol !== UserRole.ADMIN) {
       throw new UnauthorizedException('No tienes permisos para esta acción');
     }
 
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.usersRepository.findOne({ where: { id_user: id } });
     if (!user) {
       throw new UnauthorizedException('Usuario no encontrado');
     }
 
-    user.role = newRole;
+    user.rol = newRole;
     await this.usersRepository.save(user);
     
     const { password, ...result } = user;

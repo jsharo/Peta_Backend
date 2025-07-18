@@ -6,5 +6,5 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   // ✅ AGREGAR esta propiedad específica para updates
   @IsOptional()
   @IsBoolean()
-  isActive?: boolean;
+  is_active?: boolean;
 }

@@ -20,13 +20,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @param payload - El contenido decodificado del JWT
    * @returns Objeto usuario que se adjuntará a req.user
    */
+  // ...existing code...
   async validate(payload: any) {
-    // El payload debe contener al menos:
-    // sub (subject/userId), email y role
     return { 
-      id: payload.sub, 
+      id_user: payload.sub, 
       email: payload.email,
-      role: payload.role || UserRole.CLIENTE // Valor por defecto si no viene en el token
+      rol: payload.rol || payload.role || UserRole.CLIENT // Acepta ambos campos
     };
   }
+// ...existing code...
 }

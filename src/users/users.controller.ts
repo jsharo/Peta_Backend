@@ -18,24 +18,24 @@ export class UsersController {
   getProfile(@GetUser() user: User) {
     // Endpoint accesible por cualquier usuario autenticado
     return {
-      id: user.id,
+      id_user: user.id_user,
       name: user.name,
       email: user.email,
-      role: user.role
+      rol: user.rol
     };
   }
 
   @Get()
   @Roles(UserRole.ADMIN) // Solo accesible por administradores
   async findAllUsers(@GetUser() requestingUser: User) {
-    // Aseguramos que el servicio retorna un array de usuarios
-    const users = await this.usersService.findAll();
+    // Devuelve solo los clientes
+    const users = await this.usersService.findAllClients();
     return users.map(user => ({
-      id: user.id,
+      id_user: user.id_user,
       name: user.name,
       email: user.email,
-      role: user.role,
-      isActive: user.isActive
+      rol: user.rol,
+      is_active: user.is_active
     }));
   }
 
@@ -44,16 +44,16 @@ export class UsersController {
   async getAllProfiles() {
     const users = await this.usersService.findAll();
     return users.map(user => ({
-      id: user.id,
+      id_user: user.id_user,
       name: user.name,
       email: user.email,
-      role: user.role,
-      isActive: user.isActive
+      rol: user.rol,
+      is_active: user.is_active
     }));
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.CLIENTE) // Accesible por ambos roles
+  @Roles(UserRole.ADMIN, UserRole.CLIENT) // Accesible por ambos roles
   async findOne(
     @Req() req,
     @GetUser() currentUser: User,
@@ -64,16 +64,16 @@ export class UsersController {
       throw new ForbiddenException('Usuario no encontrado');
     }
     // Si no es admin, solo puede ver su propio perfil
-    if (currentUser.role !== UserRole.ADMIN && currentUser.id !== user.id) {
+    if (currentUser.rol !== UserRole.ADMIN && currentUser.id_user !== user.id_user) {
       throw new ForbiddenException(
         'No tienes permiso para acceder a este recurso'
       );
     }
     return {
-      id: user.id,
+      id_user: user.id_user,
       name: user.name,
       email: user.email,
-      role: user.role
+      rol: user.rol
     };
   }
 
@@ -88,17 +88,17 @@ export class UsersController {
     return {
       message: 'Usuario creado exitosamente',
       user: {
-        id: newUser.id,
+        id_user: newUser.id_user,
         name: newUser.name,
         email: newUser.email,
-        role: newUser.role
+        rol: newUser.rol
       }
     };
   }
 
   // ✅ NUEVO: Actualizar usuario completo (solo admin o el mismo usuario)
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.CLIENTE)
+  @Roles(UserRole.ADMIN, UserRole.CLIENT)
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -107,28 +107,28 @@ export class UsersController {
     const targetUserId = +id;
     
     // Si no es admin, solo puede actualizar su propio perfil
-    if (currentUser.role !== UserRole.ADMIN && currentUser.id !== targetUserId) {
+    if (currentUser.rol !== UserRole.ADMIN && currentUser.id_user !== targetUserId) {
       throw new ForbiddenException(
         'No tienes permiso para actualizar este usuario'
       );
     }
 
     // Si es cliente, no puede cambiar su rol
-    if (currentUser.role === UserRole.CLIENTE && updateUserDto.role) {
+    if (currentUser.rol === UserRole.CLIENT && updateUserDto.role) {
       throw new ForbiddenException(
         'No puedes cambiar tu propio rol'
       );
     }
 
     const updatedUser = await this.usersService.update(targetUserId, updateUserDto);
-    return {
-      message: 'Usuario actualizado exitosamente',
-      user: {
-        id: updatedUser.id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role
-      }
+      return {
+        message: 'Usuario actualizado exitosamente',
+        user: {
+          id_user: updatedUser.id_user,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          rol: updatedUser.rol
+        }
     };
   }
 
@@ -141,21 +141,21 @@ export class UsersController {
     @GetUser() adminUser: User
   ) {
     // Verificación adicional por si acaso
-    if (adminUser.role !== UserRole.ADMIN) {
+    if (adminUser.rol !== UserRole.ADMIN) {
       throw new ForbiddenException(
         'Requieres privilegios de administrador'
       );
     }
 
     const updatedUser = await this.usersService.updateUserRole(+id, newRole);
-    return {
-      message: 'Rol actualizado exitosamente',
-      user: {
-        id: updatedUser.id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role
-      }
+      return {
+        message: 'Rol actualizado exitosamente',
+        user: {
+          id_user: updatedUser.id_user,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          rol: updatedUser.rol
+        }
     };
   }
 
@@ -169,7 +169,7 @@ export class UsersController {
     const targetUserId = +id;
     
     // Evitar que el admin se elimine a sí mismo
-    if (adminUser.id === targetUserId) {
+    if (adminUser.id_user === targetUserId) {
       throw new ForbiddenException(
         'No puedes eliminar tu propia cuenta'
       );
@@ -191,26 +191,29 @@ export class UsersController {
     const targetUserId = +id;
     
     // Evitar que el admin se desactive a sí mismo
-    if (adminUser.id === targetUserId) {
+    if (adminUser.id_user === targetUserId) {
       throw new ForbiddenException(
         'No puedes desactivar tu propia cuenta'
       );
     }
 
     const user = await this.usersService.findOne(targetUserId);
-    const updatedUser = await this.usersService.update(targetUserId, {
-      isActive: !user.isActive
-    });
-
-    return {
-      message: `Usuario ${updatedUser.isActive ? 'activado' : 'desactivado'} exitosamente`,
-      user: {
-        id: updatedUser.id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role,
-        isActive: updatedUser.isActive
+      if (!user) {
+        throw new ForbiddenException('Usuario no encontrado');
       }
-    };
+      const updatedUser = await this.usersService.update(targetUserId, {
+        is_active: !user.is_active
+      });
+
+      return {
+        message: `Usuario ${updatedUser.is_active ? 'activado' : 'desactivado'} exitosamente`,
+        user: {
+          id_user: updatedUser.id_user,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          rol: updatedUser.rol,
+          is_active: updatedUser.is_active
+        }
+      };
   }
 }

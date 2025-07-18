@@ -18,12 +18,12 @@ export class PetsController {
 
   @Get()
   findAll(@GetUser() user: User) {
-    return this.petsService.findAllByOwner(user.id);
+    return this.petsService.findAllByOwner(user.id_user);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @GetUser() user: User) {
-    return this.petsService.findOne(+id, user.id);
+    return this.petsService.findOne(+id, user.id_user);
   }
 
   @Put(':id')
@@ -32,11 +32,11 @@ export class PetsController {
     @Body() updatePetDto: UpdatePetDto,
     @GetUser() user: User,
   ) {
-    return this.petsService.update(+id, updatePetDto, user.id);
+    return this.petsService.update(+id, updatePetDto, user.id_user);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @GetUser() user: User) {
-    return this.petsService.remove(+id, user.id);
+    return this.petsService.remove(+id, user.id_user);
   }
 }
