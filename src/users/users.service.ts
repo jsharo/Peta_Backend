@@ -55,9 +55,9 @@ export class UsersService {
     });
   }
 
-  async findOne(id: number): Promise<User | null> {
-    return this.usersRepository.findOne({
-      where: { id_user: id },
+  async findOne(id: string): Promise<User | null> {
+    return await this.usersRepository.findOne({
+      where: { id_user: Number(id) },
       select: ['id_user', 'name', 'email', 'rol', 'is_active']
     });
   }
@@ -102,6 +102,14 @@ export class UsersService {
     const updatedUser = await this.usersRepository.save(user);
     const { password, ...result } = updatedUser;
     return result as User;
+  }
+
+  async updateStatus(id: string, isActive: boolean) {
+    const user = await this.usersRepository.findOne({ where: { id_user: Number(id) } });
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+    user.is_active = isActive;
+    await this.usersRepository.save(user);
+    return { is_active: user.is_active };
   }
 
   async remove(id: number): Promise<void> {

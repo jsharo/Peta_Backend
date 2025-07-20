@@ -77,6 +77,16 @@ export class PetsService {
     });
   }
 
+  async findAll(): Promise<Pet[]> {
+    return this.petsRepository.find({ where: { is_active: true } });
+  }
+
+  async findByUserId(userId: number): Promise<Pet[]> {
+    return this.petsRepository.find({
+      where: { id_user: userId, is_active: true },
+    });
+  }
+
   async findOne(id: number, ownerId: number): Promise<Pet> {
     const pet = await this.petsRepository.findOne({
       where: { id_pet: id, id_user: ownerId },

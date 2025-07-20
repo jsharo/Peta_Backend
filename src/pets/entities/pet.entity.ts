@@ -30,4 +30,7 @@ export class Pet {
   @ManyToOne(() => User, user => user.pets)
   @JoinColumn({ name: 'id_user' })
   user: User;
+
+  @Column({ default: true })
+  is_active: boolean;
 }

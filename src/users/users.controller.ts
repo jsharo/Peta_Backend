@@ -53,28 +53,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.CLIENT) // Accesible por ambos roles
-  async findOne(
-    @Req() req,
-    @GetUser() currentUser: User,
-    @Param('id') id: string
-  ) {
-    const user = await this.usersService.findOne(+id);
-    if (!user) {
-      throw new ForbiddenException('Usuario no encontrado');
-    }
-    // Si no es admin, solo puede ver su propio perfil
-    if (currentUser.rol !== UserRole.ADMIN && currentUser.id_user !== user.id_user) {
-      throw new ForbiddenException(
-        'No tienes permiso para acceder a este recurso'
-      );
-    }
-    return {
-      id_user: user.id_user,
-      name: user.name,
-      email: user.email,
-      rol: user.rol
-    };
+  async getUser(@Param('id') id: string) {
+    return this.usersService.findOne(id); // <-- pasa como string
   }
 
   // ✅ NUEVO: Crear usuario (solo admin)
@@ -197,7 +177,7 @@ export class UsersController {
       );
     }
 
-    const user = await this.usersService.findOne(targetUserId);
+    const user = await this.usersService.findOne(String(targetUserId));
       if (!user) {
         throw new ForbiddenException('Usuario no encontrado');
       }
@@ -215,5 +195,13 @@ export class UsersController {
           is_active: updatedUser.is_active
         }
       };
+  }
+
+  @Patch(':id/status')
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('is_active') isActive: boolean
+  ) {
+    return this.usersService.updateStatus(id, isActive);
   }
 }

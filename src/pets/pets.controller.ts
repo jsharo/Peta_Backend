@@ -12,7 +12,8 @@ import {
   BadRequestException,
   HttpException,
   InternalServerErrorException,
-  ForbiddenException 
+  ForbiddenException,
+  Query
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -162,8 +163,11 @@ export class PetsController {
   }
 
   @Get()
-  findAll(@GetUser() user: User) {
-    return this.petsService.findAllByOwner(user.id_user);
+  findAll(@Query('userId') userId?: string) {
+    if (userId) {
+      return this.petsService.findByUserId(Number(userId));
+    }
+    return this.petsService.findAll();
   }
 
   @Get(':id')
@@ -186,17 +190,7 @@ export class PetsController {
   }
 
   @Get('user/:userId')
-@UseGuards(RolesGuard)
-@Roles(UserRole.ADMIN)
-findAllByUserId(
-  @Param('userId') userId: string,
-  @GetUser() adminUser: User
-) {
-  // Verificar que el solicitante es un admin
-  if (adminUser.rol !== UserRole.ADMIN) {
-    throw new ForbiddenException('No tienes permisos para esta acción');
-  }
-  
-  return this.petsService.findAllByOwner(+userId);
+findByUser(@Param('userId') userId: string) {
+  return this.petsService.findByUserId(Number(userId));
 }
 }
