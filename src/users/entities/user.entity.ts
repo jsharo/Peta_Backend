@@ -36,6 +36,6 @@ export class User {
   @Column({ name: 'is_active', type: 'boolean', default: true })
   is_active: boolean;
 
-  @OneToMany(() => Pet, pet => pet.id_user)
+  @OneToMany(() => Pet, pet => pet.user)
   pets: Pet[];
 }
