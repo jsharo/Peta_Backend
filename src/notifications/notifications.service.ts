@@ -17,6 +17,14 @@ export class NotificationsService {
     return await this.notificationRepository.save(notification);
   }
 
+  async createWithPetId(createNotificationDto: CreateNotificationDto, petId: number): Promise<Notification> {
+    const notification = this.notificationRepository.create({
+      ...createNotificationDto,
+      petId,
+    });
+    return await this.notificationRepository.save(notification);
+  }
+
   async findAll(): Promise<Notification[]> {
     return await this.notificationRepository.find({
       order: { createdAt: 'DESC' },
@@ -42,5 +50,29 @@ export class NotificationsService {
 
   async getUnreadCount(): Promise<number> {
     return await this.notificationRepository.count({ where: { isRead: false } });
+  }
+
+  async findByUserId(userId: number) {
+    return this.notificationRepository
+      .createQueryBuilder('notification')
+      .leftJoinAndSelect('notification.pet', 'pet')
+      .where('pet.id_user = :userId', { userId })
+      .orderBy('notification.createdAt', 'DESC')
+      .getMany();
+  }
+
+  async deleteAllByUserId(userId: number) {
+    // Busca los pets del usuario
+    const pets = await this.notificationRepository.manager.getRepository('pet').find({ where: { id_user: userId } });
+    const petIds = pets.map((p: any) => p.id_pet);
+    if (petIds.length === 0) return { deleted: 0 };
+
+    const result = await this.notificationRepository
+      .createQueryBuilder()
+      .delete()
+      .where('petId IN (:...petIds)', { petIds })
+      .execute();
+
+    return { deleted: result.affected };
   }
 }

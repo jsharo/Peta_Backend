@@ -109,4 +109,11 @@ export class PetsService {
       throw new NotFoundException('Mascota no encontrada');
     }
   }
+
+  // Añade este método a la clase PetsService
+  async findByCollarId(collarId: string): Promise<Pet | null> {
+    return await this.petsRepository.findOne({
+      where: { id_collar: collarId, is_active: true}
+    });
+  }
 }

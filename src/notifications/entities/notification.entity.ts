@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Pet } from '../../pets/entities/pet.entity';
 
 @Entity('notifications')
 export class Notification {
@@ -19,4 +20,12 @@ export class Notification {
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
+
+  // NUEVO: Relación con Pet
+  @ManyToOne(() => Pet, { eager: true })
+  @JoinColumn({ name: 'petId', referencedColumnName: 'id_pet' })
+  pet: Pet;
+
+  @Column({ type: 'int', nullable: true })
+  petId: number;
 }

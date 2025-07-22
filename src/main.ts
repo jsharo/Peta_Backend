@@ -25,10 +25,10 @@ async function bootstrap() {
   });
   
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:4200', // ✅ Usar variable de entorno
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+  origin: '*',  // Permitir cualquier origen temporalmente para pruebas
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+});
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
