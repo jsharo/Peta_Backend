@@ -66,4 +66,15 @@ export class NotificationsController {
   async deleteAllByUser(@Param('userId') userId: string) {
     return this.notificationsService.deleteAllByUserId(Number(userId));
   }
+
+  @Patch('user/:userId/read-all')
+  async markAllAsReadByUser(@Param('userId') userId: string) {
+    // Busca los pets del usuario y marca todas sus notificaciones como leídas
+    const pets = await this.petsService.findByUserId(Number(userId));
+    const petIds = pets.map((p: any) => p.id_pet);
+    if (petIds.length === 0) return { updated: 0 };
+
+    const result = await this.notificationsService.markAllAsReadByPetIds(petIds);
+    return { updated: result.affected };
+  }
 }

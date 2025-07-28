@@ -45,7 +45,17 @@ export class NotificationsService {
   }
 
   async markAllAsRead(): Promise<void> {
-    await this.notificationRepository.update({ isRead: false }, { isRead: true });
+    // Elimina todas las notificaciones
+    await this.notificationRepository.clear();
+  }
+
+  async markAllAsReadByPetIds(petIds: number[]) {
+    // Elimina todas las notificaciones de los pets del usuario
+    return await this.notificationRepository
+      .createQueryBuilder()
+      .delete()
+      .where('petId IN (:...petIds)', { petIds })
+      .execute();
   }
 
   async getUnreadCount(): Promise<number> {
