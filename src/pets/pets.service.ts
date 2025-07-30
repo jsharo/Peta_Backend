@@ -116,4 +116,13 @@ export class PetsService {
       where: { id_collar: collarId, is_active: true}
     });
   }
+
+  async adminUpdate(id: number, updatePetDto: UpdatePetDto): Promise<Pet> {
+    const pet = await this.petsRepository.findOne({ where: { id_pet: id } });
+    if (!pet) {
+      throw new NotFoundException('Mascota no encontrada');
+    }
+    Object.assign(pet, updatePetDto);
+    return await this.petsRepository.save(pet);
+  }
 }

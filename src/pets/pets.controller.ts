@@ -232,4 +232,55 @@ export class PetsController {
 findByUser(@Param('userId') userId: string) {
   return this.petsService.findByUserId(Number(userId));
 }
+
+@Put('admin/:id')
+@UseGuards(RolesGuard)
+@Roles(UserRole.ADMIN)
+@UseInterceptors(FileInterceptor('photo', {
+  storage: diskStorage({
+    destination: './uploads/pets',
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const ext = extname(file.originalname);
+      cb(null, `${uniqueSuffix}${ext}`);
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    if (file && file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+      cb(null, true);
+    } else if (file) {
+      cb(new Error('Solo se permiten archivos de imagen'), false);
+    } else {
+      cb(null, true);
+    }
+  },
+}))
+async adminUpdate(
+  @Param('id') id: string,
+  @Body() body: any,
+  @UploadedFile() file?: Express.Multer.File
+) {
+  try {
+    console.log('🟢 [ADMIN UPDATE] Body recibido:', body);
+    console.log('🟢 [ADMIN UPDATE] Archivo recibido:', file ? file.filename : 'Sin archivo');
+
+    const updatePetDto: any = {
+      name_pet: body.name_pet,
+      species: body.species,
+      race: body.race,
+      sex: body.sex,
+      id_collar: body.id_collar,
+      age_pet: body.age_pet !== undefined ? Number(body.age_pet) : undefined,
+    };
+    if (file) {
+      updatePetDto.photo = file.filename;
+    }
+    // Llama al nuevo método del servicio que no filtra por id_user
+    const result = await this.petsService.adminUpdate(+id, updatePetDto);
+    return result;
+  } catch (error) {
+    console.error('❌ Error en adminUpdate:', error);
+    throw error;
+  }
+}
 }
