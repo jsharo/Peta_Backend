@@ -1,24 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import * as fs from 'fs';
-import * as path from 'path';
+import { join } from 'path';
+import * as express from 'express';
 
 async function bootstrap() {
-
-  // Crear directorios necesarios para uploads
-  const uploadsDir = path.join(process.cwd(), 'uploads');
-  const petsDir = path.join(uploadsDir, 'pets');
-
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir);
-    console.log('📁 Directorio uploads creado');
-  }
-  
-  if (!fs.existsSync(petsDir)) {
-    fs.mkdirSync(petsDir);
-    console.log('📁 Directorio uploads/pets creado');
-  }
 
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'debug', 'log', 'verbose'], // Activar todos los logs
@@ -38,6 +24,9 @@ async function bootstrap() {
       enableImplicitConversion: true,
     },
   }));
+
+  // Esto expone la carpeta uploads como pública
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   await app.listen(process.env.PORT ?? 3000); // ✅ Usar variable de entorno
 }

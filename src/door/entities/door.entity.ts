@@ -12,5 +12,5 @@ export class Door {
   is_locked: boolean;
 
   @Column({ name: 'esp32_id', type: 'varchar', nullable: false })
-  esp32_id: string; // Guarda aquí la IP del ESP32, por ejemplo: "192.168.1.200"
+  esp32_id: string; 
 }

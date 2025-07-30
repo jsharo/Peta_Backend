@@ -27,7 +27,7 @@ export class DoorService {
     await this.doorRepository.save(door);
 
     try {
-      const esp32Url = `http://${door.esp32_id}/api/door`;
+      const esp32Url = `http://192.168.1.150:8080/api/door`;
       await firstValueFrom(
         this.httpService.post(esp32Url, { lock: controlDoorDto.lock }),
       );

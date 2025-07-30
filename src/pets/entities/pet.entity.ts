@@ -33,4 +33,7 @@ export class Pet {
 
   @Column({ default: true })
   is_active: boolean;
+
+  @Column({ name: 'age_pet', type: 'integer', default: 0 })
+  age_pet: number;
 }

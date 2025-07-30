@@ -9,15 +9,14 @@ import {
   UseGuards, 
   UseInterceptors, 
   UploadedFile,
-  BadRequestException,
-  HttpException,
-  InternalServerErrorException,
-  ForbiddenException,
-  Query
+  Query, // <-- Agrega esto
+  HttpException, // <-- Agrega esto
+  BadRequestException, // <-- Agrega esto
+  InternalServerErrorException // <-- Agrega esto
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path'; // ¡Faltaba esta importación!
+import { extname } from 'path';
 import { PetsService } from './pets.service';
 import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
@@ -176,12 +175,52 @@ export class PetsController {
   }
 
   @Put(':id')
-  update(
+  @UseInterceptors(FileInterceptor('photo', {
+    storage: diskStorage({
+      destination: './uploads/pets',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = extname(file.originalname);
+        cb(null, `${uniqueSuffix}${ext}`);
+      },
+    }),
+    fileFilter: (req, file, cb) => {
+      if (file && file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+        cb(null, true);
+      } else if (file) {
+        cb(new Error('Solo se permiten archivos de imagen'), false);
+      } else {
+        cb(null, true);
+      }
+    },
+  }))
+  async update(
     @Param('id') id: string,
-    @Body() updatePetDto: UpdatePetDto,
+    @Body() body: any,
     @GetUser() user: User,
+    @UploadedFile() file?: Express.Multer.File
   ) {
-    return this.petsService.update(+id, updatePetDto, user.id_user);
+    try {
+      console.log('🟢 [UPDATE] Body recibido:', body);
+      console.log('🟢 [UPDATE] Archivo recibido:', file ? file.filename : 'Sin archivo');
+
+      const updatePetDto: any = {
+        name_pet: body.name_pet,
+        species: body.species,
+        race: body.race,
+        sex: body.sex,
+        id_collar: body.id_collar,
+        age_pet: body.age_pet !== undefined ? Number(body.age_pet) : undefined,
+      };
+      if (file) {
+        updatePetDto.photo = file.filename;
+      }
+      const result = await this.petsService.update(+id, updatePetDto, user.id_user);
+      return result;
+    } catch (error) {
+      console.error('❌ Error en update:', error);
+      throw error;
+    }
   }
 
   @Delete(':id')
