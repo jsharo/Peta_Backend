@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copia archivos de dependencias
 COPY package*.json ./
-COPY prisma/schema.prisma ./prisma/
+COPY prisma/schema.prisma ./prisma/ 
 
 # Instala dependencias y construye
 RUN npm ci
@@ -19,7 +19,8 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/.env.prod .env
+COPY --from=builder /app/.env.prod .env 
+COPY --from=builder /app/prisma ./prisma  
 
 # Puerto expuesto y comando de inicio
 EXPOSE 3000
