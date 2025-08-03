@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException } from '@nestjs/common';
 import { DoorService } from './door.service';
 import { ControlDoorDto } from './dto/control-door.dto';
 
@@ -16,6 +16,11 @@ export class DoorController {
 
   @Get(':id/status')
   async getStatus(@Param('id') id: string) {
-    return this.doorService.getDoorStatus(id);
+    const door = await this.doorService.getDoorStatus(id);
+    if (!door) {
+      throw new NotFoundException('Puerta no encontrada');
+    }
+    // Solo devuelve el estado que espera el ESP32
+    return { is_locked: door.is_locked };
   }
 }
